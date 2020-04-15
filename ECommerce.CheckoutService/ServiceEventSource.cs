@@ -1,10 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Fabric;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.ServiceFabric.Services.Runtime;
 
-namespace ECommerce.ProductCatalog
+namespace ECommerce.CheckoutService
 {
-    [EventSource(Name = "MyCompany-ECommerce-ECommerce.ProductCatalog")]
+    [EventSource(Name = "MyCompany-ECommerce-ECommerce.CheckoutService")]
     internal sealed class ServiceEventSource : EventSource
     {
         public static readonly ServiceEventSource Current = new ServiceEventSource();

@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Fabric;
+using System.Fabric.Query;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ECommerce.ProductCatalog.Model;
 using Microsoft.ServiceFabric.Data.Collections;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
+using Microsoft.ServiceFabric.Services.Remoting.V2.FabricTransport.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 
 namespace ECommerce.ProductCatalog
@@ -14,7 +16,9 @@ namespace ECommerce.ProductCatalog
     /// <summary>
     /// An instance of this class is created for each service replica by the Service Fabric runtime.
     /// </summary>
-    internal sealed class ProductCatalog : StatefulService // Stateful because it holds onto the products information as a DB. 
+    /// 
+    // Stateful because it holds onto the products information as a DB. 
+    internal sealed class ProductCatalog : Microsoft.ServiceFabric.Services.Runtime.StatefulService, IProductCatalogService
     {
         private IProductRepository _repo;
 
@@ -22,8 +26,20 @@ namespace ECommerce.ProductCatalog
             : base(context)
         { }
 
+        public async Task AddProductAsync(Product product)
+        {
+            await _repo.AddProduct(product);
+        }
+
+        // IEnumerables are not serializable over the net. They must be simple types. 
+        public async Task<Product[]> GetAllProductsAssync()
+        {
+            return (await _repo.GetAllProducts()).ToArray();
+        }
+
         /// <summary>
-        /// Optional override to create listeners (e.g., HTTP, Service Remoting, WCF, etc.) for this service replica to handle client or user requests.
+        /// Optional override to create listeners (e.g., HTTP, Service Remoting, WCF, etc.) for this service replica to handle 
+        /// client or user requests.
         /// </summary>
         /// <remarks>
         /// For more information on service communication, see https://aka.ms/servicefabricservicecommunication
@@ -31,7 +47,11 @@ namespace ECommerce.ProductCatalog
         /// <returns>A collection of listeners.</returns>
         protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
         {
-            return new ServiceReplicaListener[0];
+            return new[]
+            {
+                new ServiceReplicaListener(context =>
+                    new FabricTransportServiceRemotingListener(context,this))
+            };
         }
 
         /// <summary>
