@@ -10,7 +10,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="4.0.466" />
+    <PackageReference Include="Microsoft.ServiceFabric" Version="7.0.470" />
+    <PackageReference Include="Microsoft.ServiceFabric.Diagnostics.Internal" Version="4.0.470" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services.Remoting" Version="4.0.470" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ECommerce.CheckoutService.Model\ECommerce.CheckoutService.Model.csproj" />
+    <ProjectReference Include="..\UserActor.Interfaces\UserActor.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>
